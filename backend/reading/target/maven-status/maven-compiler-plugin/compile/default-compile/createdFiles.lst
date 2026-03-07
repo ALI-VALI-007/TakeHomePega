@@ -1,1 +1,9 @@
+com\read\reading\repository\UserBookRepository.class
+com\read\reading\service\ReadingListService.class
+com\read\reading\dto\ReadingListItemDto.class
+com\read\reading\model\UserBookId.class
+com\read\reading\controller\ReadingListController.class
+com\read\reading\model\UserBook.class
+com\read\reading\model\Book.class
 com\read\reading\ReadingApplication.class
+com\read\reading\repository\BookRepository.class

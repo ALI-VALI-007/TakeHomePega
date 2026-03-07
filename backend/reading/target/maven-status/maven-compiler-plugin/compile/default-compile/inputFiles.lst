@@ -1,1 +1,9 @@
+C:\Users\alisv\source\repos\TakeHomePega\TakeHomePega\backend\reading\src\main\java\com\read\reading\controller\ReadingListController.java
+C:\Users\alisv\source\repos\TakeHomePega\TakeHomePega\backend\reading\src\main\java\com\read\reading\dto\ReadingListItemDto.java
+C:\Users\alisv\source\repos\TakeHomePega\TakeHomePega\backend\reading\src\main\java\com\read\reading\model\Book.java
+C:\Users\alisv\source\repos\TakeHomePega\TakeHomePega\backend\reading\src\main\java\com\read\reading\model\UserBook.java
+C:\Users\alisv\source\repos\TakeHomePega\TakeHomePega\backend\reading\src\main\java\com\read\reading\model\UserBookId.java
 C:\Users\alisv\source\repos\TakeHomePega\TakeHomePega\backend\reading\src\main\java\com\read\reading\ReadingApplication.java
+C:\Users\alisv\source\repos\TakeHomePega\TakeHomePega\backend\reading\src\main\java\com\read\reading\repository\BookRepository.java
+C:\Users\alisv\source\repos\TakeHomePega\TakeHomePega\backend\reading\src\main\java\com\read\reading\repository\UserBookRepository.java
+C:\Users\alisv\source\repos\TakeHomePega\TakeHomePega\backend\reading\src\main\java\com\read\reading\service\ReadingListService.java

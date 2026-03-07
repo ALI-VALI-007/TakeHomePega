@@ -3,42 +3,43 @@ package com.read.reading.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "user_books")
+@Table(name = "UserBook")
 public class UserBook {
 
-	@Column(name = "userId", nullable = false)
-	private String userId;
+	@jakarta.persistence.EmbeddedId
+	private UserBookId id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "bookId", nullable = false)
+	@JoinColumn(name = "BookId", nullable = false)
+	@MapsId("bookId")
 	private Book book;
 
-	@Column(nullable = false)
-	private String status; // "READ" or "UNREAD"
+	/** Read status. Stored as INTEGER in SQLite (0 = unread, 1 = read). */
+	@Column(name = "Status", nullable = false)
+	private boolean status;
 
 	public UserBook() {
+		this.id = new UserBookId();
 	}
 
-	public UserBook(String userId, Book book, String status) {
-		this.userId = userId;
+	public UserBook(String cognitoUserId, Book book, boolean status) {
+		this.id = new UserBookId(cognitoUserId, book.getBookId());
 		this.book = book;
 		this.status = status;
 	}
 
-	public String getUserId() {
-		return userId;
+	public UserBookId getId() {
+		return id;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setId(UserBookId id) {
+		this.id = id;
 	}
 
 	public Book getBook() {
@@ -49,11 +50,11 @@ public class UserBook {
 		this.book = book;
 	}
 
-	public String getStatus() {
+	public boolean isStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(boolean status) {
 		this.status = status;
 	}
 }

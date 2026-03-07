@@ -1,0 +1,146 @@
+.reading-page {
+  min-height: 100vh;
+  background: #1a1b26;
+  color: #c0caf5;
+}
+
+.reading-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #24283b;
+  background: #24283b;
+}
+
+.reading-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #c0caf5;
+}
+
+.reading-header-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: none;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background: #7aa2f7;
+  color: #1a1b26;
+}
+
+.btn-primary:hover {
+  background: #89b4fa;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: #a9b1d6;
+  border: 1px solid #565f89;
+}
+
+.btn-ghost:hover {
+  background: #3b4261;
+  color: #c0caf5;
+}
+
+.reading-error {
+  margin: 1rem 1.5rem;
+  padding: 0.75rem 1rem;
+  background: rgba(247, 118, 142, 0.1);
+  border: 1px solid #f7768e;
+  border-radius: 8px;
+  color: #f7768e;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.reading-error button {
+  background: transparent;
+  border: 1px solid #f7768e;
+  color: #f7768e;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.reading-error button:hover {
+  background: rgba(247, 118, 142, 0.2);
+}
+
+.reading-loading {
+  padding: 3rem;
+  text-align: center;
+  color: #a9b1d6;
+}
+
+.reading-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (max-width: 700px) {
+  .reading-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.reading-column {
+  background: #24283b;
+  border-radius: 12px;
+  padding: 1rem;
+  min-height: 320px;
+  border: 2px dashed transparent;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.reading-column--over {
+  border-color: #7aa2f7;
+  background: #2a2e3d;
+}
+
+.reading-column-title {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  color: #a9b1d6;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #3b4261;
+}
+
+.reading-column-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.reading-column-empty {
+  color: #565f89;
+  font-size: 0.9rem;
+  padding: 1.5rem;
+  text-align: center;
+  border-radius: 8px;
+  border: 1px dashed #3b4261;
+}
+
+.book-card-overlay {
+  max-width: 320px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  cursor: grabbing;
+}

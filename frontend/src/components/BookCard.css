@@ -1,0 +1,42 @@
+.book-card {
+  padding: 0.75rem 1rem;
+  background: #3b4261;
+  border-radius: 8px;
+  cursor: grab;
+  border: 1px solid transparent;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.book-card:active {
+  cursor: grabbing;
+}
+
+.book-card:hover {
+  border-color: #565f89;
+}
+
+.book-card--dragging {
+  opacity: 0.85;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.book-card-title {
+  font-weight: 600;
+  color: #c0caf5;
+  margin-bottom: 0.25rem;
+}
+
+.book-card-author {
+  font-size: 0.9rem;
+  color: #a9b1d6;
+}
+
+.book-card-notes {
+  font-size: 0.85rem;
+  color: #565f89;
+  margin-top: 0.35rem;
+  white-space: pre-wrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 2.5em;
+}
