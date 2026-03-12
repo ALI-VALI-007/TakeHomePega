@@ -13,6 +13,7 @@ import './ReadingListPage.css';
 
 const LIST_WANT = 'want';
 const LIST_READ = 'read';
+const TRASH = 'trash';
 
 function DroppableColumn({ id, title, books, onBookClick }) {
   const { setNodeRef, isOver } = useDroppable({ id });
@@ -31,6 +32,19 @@ function DroppableColumn({ id, title, books, onBookClick }) {
           <BookCard key={book.id} book={book} onEdit={onBookClick} />
         ))}
       </div>
+    </div>
+  );
+}
+
+function TrashDropZone() {
+  const { setNodeRef, isOver } = useDroppable({ id: TRASH });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`reading-trash ${isOver ? 'reading-trash--over' : ''}`}
+    >
+      🗑 Delete
     </div>
   );
 }
@@ -90,6 +104,16 @@ export default function ReadingListPage() {
     const overId = String(over.id);
 
     if (!book) return;
+
+    if (overId === TRASH) {
+      try {
+        await readingListApi.delete(userId, book.id);
+        await fetchList();
+      } catch (err) {
+        setError(err.message || 'Failed to delete');
+      }
+      return;
+    }
 
     let targetRead;
     if (overId === LIST_READ) targetRead = true;
@@ -167,6 +191,8 @@ export default function ReadingListPage() {
               onBookClick={handleEditBookClick}
             />
           </div>
+
+          <TrashDropZone />
 
           <DragOverlay>
             {activeBook ? (
