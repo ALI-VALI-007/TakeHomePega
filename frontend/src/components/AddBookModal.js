@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import './AddBookModal.css';
 
-export default function AddBookModal({ onClose, onAdded }) {
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [notes, setNotes] = useState('');
-  const [readStatus, setReadStatus] = useState(false);
+export default function AddBookModal({ onClose, onSubmit, initialBook }) {
+  const isEdit = !!initialBook;
+  const [title, setTitle] = useState(initialBook?.title || '');
+  const [author, setAuthor] = useState(initialBook?.author || '');
+  const [notes, setNotes] = useState(initialBook?.notes || '');
+  const [readStatus, setReadStatus] = useState(initialBook?.readStatus || false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -14,7 +15,13 @@ export default function AddBookModal({ onClose, onAdded }) {
     setError('');
     setSubmitting(true);
     try {
-      await onAdded({ title: title.trim(), author: author.trim(), notes: notes.trim() || null, readStatus });
+      const payload = {
+        title: title.trim(),
+        author: author.trim(),
+        notes: notes.trim() || null,
+        readStatus,
+      };
+      await onSubmit(payload);
       onClose();
     } catch (err) {
       setError(err.message || 'Failed to add book');
@@ -27,7 +34,7 @@ export default function AddBookModal({ onClose, onAdded }) {
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal add-book-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Add book</h2>
+          <h2>{isEdit ? 'Edit book' : 'Add book'}</h2>
           <button type="button" className="modal-close" onClick={onClose} aria-label="Close">
             ×
           </button>

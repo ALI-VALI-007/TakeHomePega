@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Amplify } from 'aws-amplify';
-import { getCurrentUser, signIn, signOut as amplifySignOut, signUp, fetchAuthSession } from 'aws-amplify/auth';
+import { getCurrentUser, signIn, signOut as amplifySignOut, signUp, confirmSignUp, autoSignIn, fetchAuthSession } from 'aws-amplify/auth';
 
 const config = {
   userPoolId: process.env.REACT_APP_USER_POOL_ID,
@@ -66,8 +66,18 @@ export function AuthProvider({ children }) {
     await signUp({
       username: e,
       password,
-      options: { userAttributes: { email: e } },
+      options: {
+        userAttributes: { email: e },
+        autoSignIn: true,
+      },
     });
+  };
+
+  const confirmSignUpUser = async (email, confirmationCode) => {
+    const e = email.trim();
+    await confirmSignUp({ username: e, confirmationCode: confirmationCode.trim() });
+    await autoSignIn();
+    await loadUser();
   };
 
   const signOutUser = async () => {
@@ -86,6 +96,7 @@ export function AuthProvider({ children }) {
     canUseApp,
     signIn: signInUser,
     signUp: signUpUser,
+    confirmSignUp: confirmSignUpUser,
     signOut: signOutUser,
     refreshUser: loadUser,
   };

@@ -5,6 +5,7 @@ com\read\reading\service\ReadingListServiceTest$ListTests.class
 com\read\reading\service\ReadingListServiceTest$GetByIdTests.class
 com\read\reading\ReadingApplicationTests.class
 com\read\reading\controller\ReadingListControllerTest$MissingUserId.class
+com\read\reading\controller\ReadingListApiIntegrationTest.class
 com\read\reading\controller\ReadingListControllerTest.class
 com\read\reading\controller\ReadingListControllerTest$WithUserId.class
 com\read\reading\service\ReadingListServiceTest$DeleteTests.class

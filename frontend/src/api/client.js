@@ -8,26 +8,54 @@ export async function apiRequest(path, options = {}, userId) {
   };
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
   if (!res.ok && res.status !== 204) {
-    const text = await res.text();
-    throw new Error(text || `HTTP ${res.status}`);
+    const errorText = await res.text();
+    throw new Error(errorText || `HTTP ${res.status}`);
   }
   if (res.status === 204) return null;
-  return res.json();
+  const text = await res.text();
+  if (!text) return null;
+  return JSON.parse(text);
 }
 
 export const readingListApi = {
-  list(userId) {
-    return apiRequest('/api/reading-list', { method: 'GET' }, userId);
+  async list(userId) {
+    const [unread, read] = await Promise.all([
+      apiRequest('/api/reading-list?status=UNREAD', { method: 'GET' }, userId),
+      apiRequest('/api/reading-list?status=READ', { method: 'GET' }, userId),
+    ]);
+
+    const normalize = (arr) =>
+      (Array.isArray(arr) ? arr : []).map((item) => ({
+        ...item,
+        id: item.bookId,
+        readStatus: item.status === 'READ',
+      }));
+
+    return [...normalize(unread), ...normalize(read)];
   },
-  get(userId, bookId) {
-    return apiRequest(`/api/reading-list/${bookId}`, { method: 'GET' }, userId);
-  },
+
   create(userId, body) {
-    return apiRequest('/api/reading-list', { method: 'POST', body: JSON.stringify(body) }, userId);
+    const dto = {
+      title: body.title,
+      author: body.author,
+      notes: body.notes ?? null,
+      status: body.readStatus ? 'READ' : 'UNREAD',
+    };
+    return apiRequest('/api/reading-list', { method: 'POST', body: JSON.stringify(dto) }, userId);
   },
+
   update(userId, bookId, body) {
-    return apiRequest(`/api/reading-list/${bookId}`, { method: 'PUT', body: JSON.stringify(body) }, userId);
+    const dto = {
+      bookId,
+      title: body.title,
+      author: body.author,
+      notes: body.notes ?? null,
+      status: body.readStatus ? 'READ' : 'UNREAD',
+    };
+    
+    return apiRequest('/api/reading-list', { method: 'POST', body: JSON.stringify(dto) }, userId);
   },
+
   delete(userId, bookId) {
     return apiRequest(`/api/reading-list/${bookId}`, { method: 'DELETE' }, userId);
   },

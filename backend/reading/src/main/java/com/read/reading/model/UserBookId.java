@@ -1,18 +1,16 @@
 package com.read.reading.model;
 
-import jakarta.persistence.Column;
 import java.io.Serializable;
 import java.util.Objects;
 
-/**
- * Composite primary key for UserBook: (CognitoUserId, BookId).
- */
+import jakarta.persistence.Column;
+
 public class UserBookId implements Serializable {
 
-	@Column(name = "CognitoUserId")
+	@Column(name = "cognito_user_id")
 	private String cognitoUserId;
 
-	@Column(name = "BookId")
+	@Column(name = "book_id")
 	private Long bookId;
 
 	public UserBookId() {

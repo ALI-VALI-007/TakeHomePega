@@ -4,13 +4,14 @@ import { useAuth } from '../context/AuthContext';
 import './LoginPage.css';
 
 export default function SignupPage() {
-  const { signUp, cognitoConfigured, canUseApp, loading } = useAuth();
+  const { signUp, confirmSignUp, cognitoConfigured, canUseApp, loading } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
+  const [needsVerification, setNeedsVerification] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -31,7 +32,7 @@ export default function SignupPage() {
     setSubmitting(true);
     try {
       await signUp(email.trim(), password);
-      setSuccess(true);
+      setNeedsVerification(true);
     } catch (err) {
       setError(err.message || 'Sign up failed');
     } finally {
@@ -59,15 +60,45 @@ export default function SignupPage() {
     );
   }
 
-  if (success) {
+  const handleVerifySubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSubmitting(true);
+    try {
+      await confirmSignUp(email, verificationCode);
+      navigate('/', { replace: true });
+    } catch (err) {
+      setError(err.message || 'Verification failed');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (needsVerification) {
     return (
       <div className="login-page">
-        <div className="login-box login-box--message">
-          <h1>Account created</h1>
-          <p>If your account requires verification, check your email first. Then sign in below.</p>
-          <Link to="/login" className="btn btn-primary">
-            Go to sign in
-          </Link>
+        <div className="login-box">
+          <h1>Verify your email</h1>
+          <p className="login-subtitle">
+            We sent a verification code to <strong>{email}</strong>. Enter it below.
+          </p>
+          <form onSubmit={handleVerifySubmit}>
+            {error && <div className="login-error">{error}</div>}
+            <input
+              type="text"
+              placeholder="Verification code"
+              value={verificationCode}
+              onChange={(e) => setVerificationCode(e.target.value)}
+              autoComplete="one-time-code"
+              required
+            />
+            <button type="submit" disabled={submitting}>
+              {submitting ? 'Verifying…' : 'Verify and sign in'}
+            </button>
+          </form>
+          <p className="auth-link">
+            <Link to="/login">Back to sign in</Link>
+          </p>
         </div>
       </div>
     );

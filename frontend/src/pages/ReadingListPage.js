@@ -14,7 +14,7 @@ import './ReadingListPage.css';
 const LIST_WANT = 'want';
 const LIST_READ = 'read';
 
-function DroppableColumn({ id, title, books, onDrop }) {
+function DroppableColumn({ id, title, books, onBookClick }) {
   const { setNodeRef, isOver } = useDroppable({ id });
 
   return (
@@ -28,7 +28,7 @@ function DroppableColumn({ id, title, books, onDrop }) {
           <div className="reading-column-empty">Drop books here</div>
         )}
         {books.map((book) => (
-          <BookCard key={book.id} book={book} />
+          <BookCard key={book.id} book={book} onEdit={onBookClick} />
         ))}
       </div>
     </div>
@@ -42,6 +42,7 @@ export default function ReadingListPage() {
   const [loadingList, setLoadingList] = useState(true);
   const [error, setError] = useState('');
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [editingBook, setEditingBook] = useState(null);
   const [activeBook, setActiveBook] = useState(null);
 
   const fetchList = useCallback(async () => {
@@ -69,6 +70,11 @@ export default function ReadingListPage() {
 
   const wantToRead = items.filter((b) => !b.readStatus);
   const read = items.filter((b) => b.readStatus);
+
+  const handleEditBookClick = (book) => {
+    setEditingBook(book);
+    setAddModalOpen(true);
+  };
 
   const handleDragStart = (event) => {
     const book = event.active.data.current?.book;
@@ -152,11 +158,13 @@ export default function ReadingListPage() {
               id={LIST_WANT}
               title="Want to read"
               books={wantToRead}
+              onBookClick={handleEditBookClick}
             />
             <DroppableColumn
               id={LIST_READ}
               title="Read"
               books={read}
+              onBookClick={handleEditBookClick}
             />
           </div>
 
@@ -172,8 +180,17 @@ export default function ReadingListPage() {
 
       {addModalOpen && (
         <AddBookModal
-          onClose={() => setAddModalOpen(false)}
-          onAdded={handleAddBook}
+          onClose={() => {
+            setAddModalOpen(false);
+            setEditingBook(null);
+          }}
+          onSubmit={editingBook
+            ? async (values) => {
+                await readingListApi.update(userId, editingBook.id, { ...editingBook, ...values });
+                await fetchList();
+              }
+            : handleAddBook}
+          initialBook={editingBook}
         />
       )}
     </div>

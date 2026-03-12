@@ -1,6 +1,12 @@
 package com.read.reading.model;
 
+import com.read.reading.Converter.ReadStatusConverter;
+
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -9,29 +15,39 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "UserBook")
+@Table(name = "user_book")
 public class UserBook {
 
-	@jakarta.persistence.EmbeddedId
+	@EmbeddedId
+	@AttributeOverrides({
+		@AttributeOverride(name = "cognitoUserId", column = @Column(name = "cognito_user_id")),
+		@AttributeOverride(name = "bookId", column = @Column(name = "book_id"))
+	})
 	private UserBookId id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "BookId", nullable = false)
+	@JoinColumn(name = "book_id", nullable = false)
 	@MapsId("bookId")
 	private Book book;
 
-	/** Read status. Stored as INTEGER in SQLite (0 = unread, 1 = read). */
-	@Column(name = "Status", nullable = false)
-	private boolean status;
+
+	public enum ReadStatus {
+		READ,
+		UNREAD
+	}
+
+	@Convert(converter = ReadStatusConverter.class)
+	@Column(name = "status", nullable = false)
+	private ReadStatus status;
 
 	public UserBook() {
 		this.id = new UserBookId();
 	}
 
-	public UserBook(String cognitoUserId, Book book, boolean status) {
+	public UserBook(String cognitoUserId, Book book, ReadStatus status) {
 		this.id = new UserBookId(cognitoUserId, book.getBookId());
 		this.book = book;
-		this.status = status;
+		this.status = status; 
 	}
 
 	public UserBookId getId() {
@@ -50,11 +66,11 @@ public class UserBook {
 		this.book = book;
 	}
 
-	public boolean isStatus() {
-		return status;
+	public ReadStatus getStatus() {
+		return this.status;
 	}
 
-	public void setStatus(boolean status) {
+	public void setStatus(ReadStatus status) {
 		this.status = status;
 	}
 }

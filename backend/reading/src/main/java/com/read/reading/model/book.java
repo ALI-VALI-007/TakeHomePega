@@ -8,23 +8,23 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Book")
+@Table(name = "book")
 public class Book {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "BookId")
+	@Column(name = "book_id")
 	private Long bookId;
 
-	@Column(name = "Title", nullable = false)
+	@Column(name = "title", nullable = false)
 	private String title;
 
-	@Column(name = "Author", nullable = false)
+	@Column(name = "author", nullable = false)
 	private String author;
 
-	@Column(name = "Notes")
+	@Column(name = "notes")
 	private String notes;
-
+	
 	public Book() {
 	}
 

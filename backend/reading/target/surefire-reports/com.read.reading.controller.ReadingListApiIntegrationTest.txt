@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.read.reading.controller.ReadingListApiIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.37 s -- in com.read.reading.controller.ReadingListApiIntegrationTest

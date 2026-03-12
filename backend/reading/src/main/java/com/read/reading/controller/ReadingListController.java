@@ -1,16 +1,27 @@
 package com.read.reading.controller;
 
-import com.read.reading.dto.ReadingListItemDto;
-import com.read.reading.service.ReadingListService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Reading list API. User identity is provided via X-User-Id header (Cognito sub or similar when auth is enabled).
- */
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.read.reading.dto.ReadingListItemDto;
+import com.read.reading.model.UserBook;
+import com.read.reading.model.UserBook.ReadStatus;
+import com.read.reading.service.ReadingListService;
+
+
 @RestController
 @RequestMapping("/api/reading-list")
 @CrossOrigin(origins = "*")
@@ -24,62 +35,60 @@ public class ReadingListController {
 		this.service = service;
 	}
 
-	@GetMapping
-	public ResponseEntity<List<ReadingListItemDto>> list(
-			@RequestHeader(value = USER_ID_HEADER, required = false) String userId) {
-		if (invalidUserId(userId)) {
-			return ResponseEntity.badRequest().build();
-		}
-		return ResponseEntity.ok(service.list(userId.trim()));
-	}
-
-	@GetMapping("/{id}")
-	public ResponseEntity<ReadingListItemDto> getById(
-			@RequestHeader(value = USER_ID_HEADER, required = false) String userId,
-			@PathVariable Long id) {
-		if (invalidUserId(userId)) {
-			return ResponseEntity.badRequest().build();
-		}
-		return service.getById(userId.trim(), id)
-				.map(ResponseEntity::ok)
-				.orElse(ResponseEntity.notFound().build());
-	}
-
 	@PostMapping
-	public ResponseEntity<ReadingListItemDto> create(
-			@RequestHeader(value = USER_ID_HEADER, required = false) String userId,
-			@RequestBody ReadingListItemDto dto) {
-		if (invalidUserId(userId)) {
+	public ResponseEntity<Void> createBook(@RequestBody ReadingListItemDto dto, 
+		@RequestHeader(value="X-User-Id", required=true) String cognitoUserId
+	) {
+		if (invalidUserId(cognitoUserId) || !isValidDto(dto)){
 			return ResponseEntity.badRequest().build();
-		}
-		ReadingListItemDto created = service.create(userId.trim(), dto);
-		return ResponseEntity.status(HttpStatus.CREATED).body(created);
+		}	
+		service.saveBook(cognitoUserId.trim(), dto);
+		return ResponseEntity.ok().build();
 	}
 
-	@PutMapping("/{id}")
-	public ResponseEntity<ReadingListItemDto> update(
-			@RequestHeader(value = USER_ID_HEADER, required = false) String userId,
-			@PathVariable Long id,
-			@RequestBody ReadingListItemDto dto) {
-		if (invalidUserId(userId)) {
+	@DeleteMapping("/{bookId}")
+	public ResponseEntity<Void> deleteBook(@PathVariable Long bookId, 
+		@RequestHeader(value="X-User-Id", required=true) String cognitoUserId
+	) {
+		if (invalidUserId(cognitoUserId) || bookId == null){
 			return ResponseEntity.badRequest().build();
 		}
-		return service.update(userId.trim(), id, dto)
-				.map(ResponseEntity::ok)
-				.orElse(ResponseEntity.notFound().build());
+		service.deleteBook(bookId, cognitoUserId);
+		return ResponseEntity.ok().build();
 	}
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(
-			@RequestHeader(value = USER_ID_HEADER, required = false) String userId,
-			@PathVariable Long id) {
-		if (invalidUserId(userId)) {
+	@PatchMapping
+	public ResponseEntity<Void> updateStatus (@RequestBody ReadingListItemDto dto, 
+		@RequestHeader(value="X-User-Id", required=true) String cognitoUserId
+	) {
+		if (invalidUserId(cognitoUserId) || dto.getBookId() == null){
 			return ResponseEntity.badRequest().build();
 		}
-		boolean deleted = service.delete(userId.trim(), id);
-		return deleted
-				? ResponseEntity.noContent().build()
-				: ResponseEntity.notFound().build();
+		service.updateStatus(dto, cognitoUserId);
+		return ResponseEntity.ok().build();
+	}
+
+	@GetMapping
+	public ResponseEntity<List<ReadingListItemDto>> getBooks (@RequestParam ReadStatus status, 
+		@RequestHeader(value="X-User-Id", required=true) String cognitoUserId
+	) {
+		if (invalidUserId(cognitoUserId) || status == null){
+			return ResponseEntity.badRequest().build();
+		}
+		List<UserBook> books = service.getUserBooks(cognitoUserId,status);
+		List<ReadingListItemDto> res = new ArrayList<>();
+		books.forEach(curBook -> {
+			res.add(new ReadingListItemDto(
+				curBook.getBook().getBookId(),curBook.getBook().getTitle(),curBook.getBook().getAuthor(),curBook.getBook().getNotes(),curBook.getStatus()));
+		});
+		return ResponseEntity.ok(res);	
+	}	
+
+	private boolean isValidDto(ReadingListItemDto dto) {
+    return dto != null &&
+        dto.getTitle() != null && !dto.getTitle().isBlank()
+        && dto.getAuthor() != null && !dto.getAuthor().isBlank()
+        && dto.getStatus() != null;
 	}
 
 	private static boolean invalidUserId(String userId) {
