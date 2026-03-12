@@ -74,6 +74,16 @@ export default function ReadingListPage() {
     }
   }, [userId]);
 
+  const refreshListSilently = useCallback(async () => {
+    if (!userId) return;
+    try {
+      const list = await readingListApi.list(userId);
+      setItems(Array.isArray(list) ? list : []);
+    } catch (err) {
+      setError(err.message || 'Failed to load list');
+    }
+  }, [userId]);
+
   useEffect(() => {
     if (!canUseApp) {
       navigate('/login', { replace: true });
@@ -106,10 +116,11 @@ export default function ReadingListPage() {
     if (!book) return;
 
     if (overId === TRASH) {
+      setItems((prev) => prev.filter((b) => b.id !== book.id));
       try {
         await readingListApi.delete(userId, book.id);
-        await fetchList();
       } catch (err) {
+        setItems((prev) => [...prev, book]);
         setError(err.message || 'Failed to delete');
       }
       return;
@@ -125,20 +136,34 @@ export default function ReadingListPage() {
     if (targetRead === undefined || targetRead === null) return;
     if (targetRead === book.readStatus) return;
 
+    setItems((prev) =>
+      prev.map((b) =>
+        b.id === book.id ? { ...b, readStatus: targetRead } : b
+      )
+    );
+
     try {
       await readingListApi.update(userId, book.id, {
         ...book,
         readStatus: targetRead,
       });
-      await fetchList();
     } catch (err) {
+      setItems((prev) =>
+        prev.map((b) =>
+          b.id === book.id ? { ...b, readStatus: book.readStatus } : b
+        )
+      );
       setError(err.message || 'Failed to update');
     }
   };
 
   const handleAddBook = async (body) => {
-    await readingListApi.create(userId, body);
-    await fetchList();
+    try {
+      await readingListApi.create(userId, body);
+      await refreshListSilently();
+    } catch (err) {
+      setError(err.message || 'Failed to add book');
+    }
   };
 
   if (loading || !userId) {
@@ -212,8 +237,18 @@ export default function ReadingListPage() {
           }}
           onSubmit={editingBook
             ? async (values) => {
-                await readingListApi.update(userId, editingBook.id, { ...editingBook, ...values });
-                await fetchList();
+                const updated = { ...editingBook, ...values };
+                setItems((prev) =>
+                  prev.map((b) =>
+                    b.id === editingBook.id ? updated : b
+                  )
+                );
+                try {
+                  await readingListApi.update(userId, editingBook.id, updated);
+                } catch (err) {
+                  setError(err.message || 'Failed to update');
+                  await refreshListSilently();
+                }
               }
             : handleAddBook}
           initialBook={editingBook}
