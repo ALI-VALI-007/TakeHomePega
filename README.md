@@ -12,12 +12,12 @@ Build a small service (any language/framework you like) that manages “reading 
 I assume this is a website to keep track of books. The reason I say so is because it says keeping track of a "reading list"
 
 ## How To Run:
-Running this is pretty simple, please have docker installed. The application will also be hosted and in the email
+Running this is pretty simple, please have docker installed. The application will also be hosted (http://alisvali.com/login) and in the email
 Go to the primary directory of this project, there will be a docker file here.
 Simply run:
 > docker compose up --build
 This will build the docker image and start everything up.
-The link is http://localhost:3000/
+The link is http://localhost:80/
 You can also access the backend REST API: http://localhost:8080/swagger-ui/index.html
 You can run
 > docker ps
@@ -28,6 +28,11 @@ to end a specific process
 or
 > docker compose down
 to bring all instances down
+
+The test account:
+Email: tuq25256@temple.edu
+Password: Test3211!
+can be used if you dont want to set up an account
 
 ## Designing The site:
 The site seems pretty straightforward to make
