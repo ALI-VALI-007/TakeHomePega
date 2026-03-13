@@ -12,7 +12,7 @@ Build a small service (any language/framework you like) that manages “reading 
 I assume this is a website to keep track of books. The reason I say so is because it says keeping track of a "reading list"
 
 ## How To Run:
-Running this is pretty simple, please have docker installed. The application will also be hosted (http://alisvali.com/login) and in the email
+Running this is pretty simple, please have docker installed. The application will also be hosted (http://alisvali.com/login)
 Go to the primary directory of this project, there will be a docker file here.
 Simply run:
 > docker compose up --build
