@@ -72,6 +72,7 @@ For the backend I used Java, specifically Spring Boot. The reason I chose Java w
 
 This was my first time using Spring Boot and since this position did include coding in Java I coded it all by hand. However I did use AI for reading debugging logs from the 
 > docker compose logs backend
+
 to see what sql queries were being made by the JPA. The primary issue I had was the composite key created duplicate fields. book_id was the correct name for the field but the JPA kept adding BookId as a new field which altered the wanted result of the database. 
 
 ## The Frontend
