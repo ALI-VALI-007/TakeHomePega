@@ -16,17 +16,21 @@ Running this is pretty simple, please have docker installed. The application wil
 Go to the primary directory of this project, there will be a docker file here.
 Simply run:
 > docker compose up --build
+
 This will build the docker image and start everything up.
 The link is http://localhost:80/
 You can also access the backend REST API: http://localhost:8080/swagger-ui/index.html
 You can run
 > docker ps
+
 to see if the instances are properly running (backend and frontend)
 and
 > docker kill {id}
+
 to end a specific process 
 or
 > docker compose down
+
 to bring all instances down
 
 The test account:
